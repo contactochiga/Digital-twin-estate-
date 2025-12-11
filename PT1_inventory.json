@@ -2,11 +2,156 @@
   "estate": "OCH",
   "building": "PT1",
   "footprint_m": { "width": 24, "depth": 20 },
+
   "floors": [
-    { "floor": 1, "units": [ {"uid":"OCH-PT1-F01-A","type":"3B"},{"uid":"OCH-PT1-F01-B","type":"2B"},{"uid":"OCH-PT1-F01-C","type":"3B"},{"uid":"OCH-PT1-F01-D","type":"2B"} ] },
-    { "floor": 2, "units": [ {"uid":"OCH-PT1-F02-A","type":"3B"},{"uid":"OCH-PT1-F02-B","type":"2B"},{"uid":"OCH-PT1-F02-C","type":"3B"},{"uid":"OCH-PT1-F02-D","type":"2B"} ] },
-    { "floor": 3, "units": [ {"uid":"OCH-PT1-F03-A","type":"3B"},{"uid":"OCH-PT1-F03-B","type":"2B"},{"uid":"OCH-PT1-F03-C","type":"3B"},{"uid":"OCH-PT1-F03-D","type":"2B"} ] },
-    { "floor": 4, "units": [ {"uid":"OCH-PT1-F04-A","type":"3B"},{"uid":"OCH-PT1-F04-B","type":"2B"},{"uid":"OCH-PT1-F04-C","type":"3B"},{"uid":"OCH-PT1-F04-D","type":"2B"} ] },
-    { "floor": 5, "units": [ {"uid":"OCH-PT1-F05-A","type":"3B"},{"uid":"OCH-PT1-F05-B","type":"2B"},{"uid":"OCH-PT1-F05-C","type":"3B"},{"uid":"OCH-PT1-F05-D","type":"2B"} ] }
-  ]
+    {
+      "floor": 1,
+      "units": [
+        { "uid": "OCH-PT1-F01-A", "type": "3B",
+          "meters": { "electric": "KWH-PT1-A-01", "water": "WT-PT1-A-01", "gas": "GS-PT1-A-01", "fiber": "FB-PT1-A-01" },
+          "ont": "ONT-PT1-A-01"
+        },
+        { "uid": "OCH-PT1-F01-B", "type": "2B",
+          "meters": { "electric": "KWH-PT1-B-01", "water": "WT-PT1-B-01", "gas": "GS-PT1-B-01", "fiber": "FB-PT1-B-01" },
+          "ont": "ONT-PT1-B-01"
+        },
+        { "uid": "OCH-PT1-F01-C", "type": "3B",
+          "meters": { "electric": "KWH-PT1-C-01", "water": "WT-PT1-C-01", "gas": "GS-PT1-C-01", "fiber": "FB-PT1-C-01" },
+          "ont": "ONT-PT1-C-01"
+        },
+        { "uid": "OCH-PT1-F01-D", "type": "2B",
+          "meters": { "electric": "KWH-PT1-D-01", "water": "WT-PT1-D-01", "gas": "GS-PT1-D-01", "fiber": "FB-PT1-D-01" },
+          "ont": "ONT-PT1-D-01"
+        }
+      ]
+    },
+
+    {
+      "floor": 2,
+      "units": [
+        { "uid": "OCH-PT1-F02-A", "type": "3B",
+          "meters": { "electric": "KWH-PT1-A-02", "water": "WT-PT1-A-02", "gas": "GS-PT1-A-02", "fiber": "FB-PT1-A-02" },
+          "ont": "ONT-PT1-A-02"
+        },
+        { "uid": "OCH-PT1-F02-B", "type": "2B",
+          "meters": { "electric": "KWH-PT1-B-02", "water": "WT-PT1-B-02", "gas": "GS-PT1-B-02", "fiber": "FB-PT1-B-02" },
+          "ont": "ONT-PT1-B-02"
+        },
+        { "uid": "OCH-PT1-F02-C", "type": "3B",
+          "meters": { "electric": "KWH-PT1-C-02", "water": "WT-PT1-C-02", "gas": "GS-PT1-C-02", "fiber": "FB-PT1-C-02" },
+          "ont": "ONT-PT1-C-02"
+        },
+        { "uid": "OCH-PT1-F02-D", "type": "2B",
+          "meters": { "electric": "KWH-PT1-D-02", "water": "WT-PT1-D-02", "gas": "GS-PT1-D-02", "fiber": "FB-PT1-D-02" },
+          "ont": "ONT-PT1-D-02"
+        }
+      ]
+    },
+
+    {
+      "floor": 3,
+      "units": [
+        { "uid": "OCH-PT1-F03-A", "type": "3B",
+          "meters": { "electric": "KWH-PT1-A-03", "water": "WT-PT1-A-03", "gas": "GS-PT1-A-03", "fiber": "FB-PT1-A-03" },
+          "ont": "ONT-PT1-A-03"
+        },
+        { "uid": "OCH-PT1-F03-B", "type": "2B",
+          "meters": { "electric": "KWH-PT1-B-03", "water": "WT-PT1-B-03", "gas": "GS-PT1-B-03", "fiber": "FB-PT1-B-03" },
+          "ont": "ONT-PT1-B-03"
+        },
+        { "uid": "OCH-PT1-F03-C", "type": "3B",
+          "meters": { "electric": "KWH-PT1-C-03", "water": "WT-PT1-C-03", "gas": "GS-PT1-C-03", "fiber": "FB-PT1-C-03" },
+          "ont": "ONT-PT1-C-03"
+        },
+        { "uid": "OCH-PT1-F03-D", "type": "2B",
+          "meters": { "electric": "KWH-PT1-D-03", "water": "WT-PT1-D-03", "gas": "GS-PT1-D-03", "fiber": "FB-PT1-D-03" },
+          "ont": "ONT-PT1-D-03"
+        }
+      ]
+    },
+
+    {
+      "floor": 4,
+      "units": [
+        { "uid": "OCH-PT1-F04-A", "type": "3B",
+          "meters": { "electric": "KWH-PT1-A-04", "water": "WT-PT1-A-04", "gas": "GS-PT1-A-04", "fiber": "FB-PT1-A-04" },
+          "ont": "ONT-PT1-A-04"
+        },
+        { "uid": "OCH-PT1-F04-B", "type": "2B",
+          "meters": { "electric": "KWH-PT1-B-04", "water": "WT-PT1-B-04", "gas": "GS-PT1-B-04", "fiber": "FB-PT1-B-04" },
+          "ont": "ONT-PT1-B-04"
+        },
+        { "uid": "OCH-PT1-F04-C", "type": "3B",
+          "meters": { "electric": "KWH-PT1-C-04", "water": "WT-PT1-C-04", "gas": "GS-PT1-C-04", "fiber": "FB-PT1-C-04" },
+          "ont": "ONT-PT1-C-04"
+        },
+        { "uid": "OCH-PT1-F04-D", "type": "2B",
+          "meters": { "electric": "KWH-PT1-D-04", "water": "WT-PT1-D-04", "gas": "GS-PT1-D-04", "fiber": "FB-PT1-D-04" },
+          "ont": "ONT-PT1-D-04"
+        }
+      ]
+    },
+
+    {
+      "floor": 5,
+      "units": [
+        { "uid": "OCH-PT1-F05-A", "type": "3B",
+          "meters": { "electric": "KWH-PT1-A-05", "water": "WT-PT1-A-05", "gas": "GS-PT1-A-05", "fiber": "FB-PT1-A-05" },
+          "ont": "ONT-PT1-A-05"
+        },
+        { "uid": "OCH-PT1-F05-B", "type": "2B",
+          "meters": { "electric": "KWH-PT1-B-05", "water": "WT-PT1-B-05", "gas": "GS-PT1-B-05", "fiber": "FB-PT1-B-05" },
+          "ont": "ONT-PT1-B-05"
+        },
+        { "uid": "OCH-PT1-F05-C", "type": "3B",
+          "meters": { "electric": "KWH-PT1-C-05", "water": "WT-PT1-C-05", "gas": "GS-PT1-C-05", "fiber": "FB-PT1-C-05" },
+          "ont": "ONT-PT1-C-05"
+        },
+        { "uid": "OCH-PT1-F05-D", "type": "2B",
+          "meters": { "electric": "KWH-PT1-D-05", "water": "WT-PT1-D-05", "gas": "GS-PT1-D-05", "fiber": "FB-PT1-D-05" },
+          "ont": "ONT-PT1-D-05"
+        }
+      ]
+    }
+  ],
+
+  "junction_boxes": [
+    { "id": "JBOX-STREET-01", "type": "street", "feeds": ["PT1","PT2"], "position": [-8.2, 0, -20] },
+    { "id": "JBOX-PT1-ENTRY", "type": "building", "feeds": ["PT1-RISER"], "position": [0, 0, -8] }
+  ],
+
+  "mep": {
+    "power_main": {
+      "diameter_mm": 50,
+      "color": "#e74c3c",
+      "from": "GEN-HOUSE",
+      "to": "JBOX-STREET-01"
+    },
+    "water_main": {
+      "diameter_mm": 100,
+      "color": "#2E86DE",
+      "from": "WATER-PLANT",
+      "to": "JBOX-STREET-01"
+    },
+    "fiber_main": {
+      "diameter_mm": 20,
+      "color": "#6f42c1",
+      "from": "FIBER-HUB",
+      "to": "JBOX-STREET-01"
+    },
+    "gas_main": {
+      "diameter_mm": 25,
+      "color": "#d35400",
+      "from": "GAS-HOUSE",
+      "to": "JBOX-STREET-01"
+    },
+
+    "risers": [
+      { "id": "PT1-RISER-POWER", "type": "power", "diameter_mm": 40, "color": "#e74c3c", "path": "VERTICAL" },
+      { "id": "PT1-RISER-WATER", "type": "water", "diameter_mm": 80, "color": "#2E86DE", "path": "VERTICAL" },
+      { "id": "PT1-RISER-SEWAGE", "type": "sewage", "diameter_mm": 150, "color": "#7f5539", "path": "VERTICAL" },
+      { "id": "PT1-RISER-GAS", "type": "gas", "diameter_mm": 25, "color": "#d35400", "path": "VERTICAL" },
+      { "id": "PT1-RISER-FIBER", "type": "fiber", "diameter_mm": 20, "color": "#6f42c1", "path": "VERTICAL" }
+    ]
+  }
 }
