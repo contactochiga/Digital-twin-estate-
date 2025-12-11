@@ -1,220 +1,210 @@
-import React, {useEffect, useRef} from "react";
+import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
-export default function ThreeScene(){
+export default function ThreeScene() {
   const containerRef = useRef();
 
-  useEffect(()=>{
+  useEffect(() => {
     const container = containerRef.current;
+
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xeef2f5);
 
-    const renderer = new THREE.WebGLRenderer({antialias:true});
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(container.clientWidth, container.clientHeight);
     container.appendChild(renderer.domElement);
 
-    const camera = new THREE.PerspectiveCamera(35, container.clientWidth/container.clientHeight, 0.1, 2000);
+    const camera = new THREE.PerspectiveCamera(
+      35,
+      container.clientWidth / container.clientHeight,
+      0.1,
+      2000
+    );
     camera.position.set(40, 30, 60);
 
     const controls = new OrbitControls(camera, renderer.domElement);
-    controls.target.set(0,6,0);
+    controls.target.set(0, 8, 0);
     controls.update();
 
-    // lights
-    const hemi = new THREE.HemisphereLight(0xffffff, 0x444444, 0.9);
-    hemi.position.set(0,50,0);
-    scene.add(hemi);
-    const dir = new THREE.DirectionalLight(0xffffff, 0.7);
-    dir.position.set(-20,30,10);
-    scene.add(dir);
+    // Lighting
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1));
+    const dl = new THREE.DirectionalLight(0xffffff, 0.8);
+    dl.position.set(-20, 30, 10);
+    scene.add(dl);
 
-    const grid = new THREE.GridHelper(120, 24, 0xcccccc, 0xcccccc);
-    grid.position.y = 0;
-    scene.add(grid);
-
+    // Main building group
     const building = new THREE.Group();
     scene.add(building);
 
-    // fetch inventory (local JSON)
-    let inventory = null;
-    fetch("/PT1_inventory.json").then(r=>r.json()).then(j=>{
-      inventory = j;
-      buildFromInventory(j);
-    }).catch(err=>{
-      // fallback - small sample inventory
-      inventory = {
-        "footprint_m": {"width":24,"depth":20},
-        "floors":[
-          {"floor":1,"units":[{"uid":"OCH-PT1-F01-A","type":"3B"},{"uid":"OCH-PT1-F01-B","type":"2B"},{"uid":"OCH-PT1-F01-C","type":"3B"},{"uid":"OCH-PT1-F01-D","type":"2B"}]},
-          {"floor":2,"units":[{"uid":"OCH-PT1-F02-A","type":"3B"},{"uid":"OCH-PT1-F02-B","type":"2B"},{"uid":"OCH-PT1-F02-C","type":"3B"},{"uid":"OCH-PT1-F02-D","type":"2B"}]},
-          {"floor":3,"units":[{"uid":"OCH-PT1-F03-A","type":"3B"},{"uid":"OCH-PT1-F03-B","type":"2B"},{"uid":"OCH-PT1-F03-C","type":"3B"},{"uid":"OCH-PT1-F03-D","type":"2B"}]},
-          {"floor":4,"units":[{"uid":"OCH-PT1-F04-A","type":"3B"},{"uid":"OCH-PT1-F04-B","type":"2B"},{"uid":"OCH-PT1-F04-C","type":"3B"},{"uid":"OCH-PT1-F04-D","type":"2B"}]},
-          {"floor":5,"units":[{"uid":"OCH-PT1-F05-A","type":"3B"},{"uid":"OCH-PT1-F05-B","type":"2B"},{"uid":"OCH-PT1-F05-C","type":"3B"},{"uid":"OCH-PT1-F05-D","type":"2B"}]}
-        ]
-      };
-      buildFromInventory(inventory);
-    });
-
-    // Materials
-    const matWall = new THREE.MeshStandardMaterial({color:0xf7f4f1});
-    const matOrange = new THREE.MeshStandardMaterial({color:0xe8602f});
-    const matBal = new THREE.MeshStandardMaterial({color:0xdddddd});
-    const matGlass = new THREE.MeshStandardMaterial({color:0x7fa7ff, opacity:0.9, transparent:true});
+    // Load inventory for floors
+    fetch("/PT1_inventory.json")
+      .then((r) => r.json())
+      .then((inventory) => buildModel(inventory))
+      .catch(() => console.warn("Inventory missing—using fallback"));
 
     const clickable = [];
 
-    function buildFromInventory(inventory){
-      const footprintW = inventory.footprint_m.width;
-      const footprintD = inventory.footprint_m.depth;
-      const floorHeight = 3.2;
+    // MATERIALS
+    const matWall = new THREE.MeshStandardMaterial({ color: 0xf7f4f1 });
+    const matOrange = new THREE.MeshStandardMaterial({ color: 0xe8602f });
+    const matGlass = new THREE.MeshStandardMaterial({
+      color: 0x7fa7ff,
+      opacity: 0.85,
+      transparent: true,
+    });
+    const matRail = new THREE.MeshStandardMaterial({ color: 0xffffff });
+    const matBalcony = new THREE.MeshStandardMaterial({ color: 0xdedede });
+
+    // ======================================================
+    // 🔥 BUILD REAL ARCHITECTURAL MODEL
+    // ======================================================
+    function buildModel(inventory) {
       const floors = inventory.floors.length;
-      const coreWidth = 4;
-      const usableWidth = footprintW - coreWidth;
-      const blockWidth = usableWidth/2;
-      const unitWidth = blockWidth / 2;
-      const unitDepth = footprintD;
+      const floorHeight = 3.2;
+      const totalHeight = floors * floorHeight;
 
-      // core
-      const coreGeom = new THREE.BoxGeometry(coreWidth, floors*floorHeight+0.2, footprintD);
-      const coreMesh = new THREE.Mesh(coreGeom, new THREE.MeshStandardMaterial({color:0xeeeeee}));
-      coreMesh.position.set(0, floors*floorHeight/2, 0);
-      building.add(coreMesh);
+      // FRONT/BACK width and depth
+      const width = 24;
+      const depth = 20;
 
-      for(let f=0; f<floors; f++){
-        const floorY = (f+0.5) * floorHeight;
+      // Build each floor shell
+      for (let f = 0; f < floors; f++) {
+        const y = (f + 0.5) * floorHeight;
+
         const floorGroup = new THREE.Group();
-        floorGroup.name = "floor-"+(f+1);
-        floorGroup.position.y = floorY;
+        floorGroup.position.y = y;
 
-        const leftBlockOriginX = -(coreWidth/2 + blockWidth/2);
-        const rightBlockOriginX = (coreWidth/2 + blockWidth/2);
+        // ------------------------------
+        // ORANGE RECESSED CORE
+        // ------------------------------
+        const coreGeom = new THREE.BoxGeometry(6, floorHeight, 2.2);
+        const core = new THREE.Mesh(coreGeom, matOrange);
+        core.position.set(0, 0, -(depth / 2) + 1.1);
+        floorGroup.add(core);
 
-        const unitPositions = [
-          {x: leftBlockOriginX - blockWidth/2 + unitWidth/2, idSuffix:"A"},
-          {x: leftBlockOriginX - blockWidth/2 + unitWidth*1.5, idSuffix:"B"},
-          {x: rightBlockOriginX - blockWidth/2 + unitWidth/2, idSuffix:"C"},
-          {x: rightBlockOriginX - blockWidth/2 + unitWidth*1.5, idSuffix:"D"},
+        // ------------------------------
+        // BALCONIES LEFT / RIGHT (2 per floor)
+        // ------------------------------
+        const createBalcony = (xPos) => {
+          const bal = new THREE.Mesh(
+            new THREE.BoxGeometry(3, 0.18, 1.4),
+            matBalcony
+          );
+          bal.position.set(xPos, -1.3, -(depth / 2) + 0.8);
+
+          // rails
+          for (let i = 0; i < 3; i++) {
+            const rail = new THREE.Mesh(
+              new THREE.BoxGeometry(3, 0.05, 0.05),
+              matRail
+            );
+            rail.position.set(xPos, -0.8 + i * 0.3, -(depth / 2) + 0.1);
+            floorGroup.add(rail);
+          }
+
+          return bal;
+        };
+
+        floorGroup.add(createBalcony(-4)); // left balcony
+        floorGroup.add(createBalcony(4)); // right balcony
+
+        // ------------------------------
+        // WINDOWS (front + sides)
+        // ------------------------------
+        const createWindow = (xPos, yOffset = 0) => {
+          const win = new THREE.Mesh(
+            new THREE.PlaneGeometry(1.4, 1),
+            matGlass
+          );
+          win.position.set(xPos, yOffset, -(depth / 2) + 0.05);
+          return win;
+        };
+
+        floorGroup.add(createWindow(-8, 0.5));
+        floorGroup.add(createWindow(-8, -0.8));
+
+        floorGroup.add(createWindow(8, 0.5));
+        floorGroup.add(createWindow(8, -0.8));
+
+        // ------------------------------
+        // UNIT CLICK BOXES (A, B, C, D)
+        // ------------------------------
+        const unitSlots = [
+          { x: -6, id: "A" },
+          { x: -2, id: "B" },
+          { x: 2, id: "C" },
+          { x: 6, id: "D" },
         ];
 
-        for(let u=0; u<4; u++){
-          const pos = unitPositions[u];
-          const w = unitWidth - 0.15;
-          const h = floorHeight * 0.95;
-          const d = unitDepth - 0.15;
-          const geom = new THREE.BoxGeometry(w, h, d);
-          const mesh = new THREE.Mesh(geom, matWall.clone());
-          // local group
-          const unitGroup = new THREE.Group();
-          const balDepth = 1.4;
-          const balGeom = new THREE.BoxGeometry(w*0.95, 0.18, balDepth);
-          const bal = new THREE.Mesh(balGeom, matBal);
-          bal.position.set(0, -(floorHeight/2) + 0.18/2 + 0.02, -(d/2 + balDepth/2 - 0.05));
-          const orangeGeom = new THREE.BoxGeometry(w*0.95, h*0.6, 0.1);
-          const orange = new THREE.Mesh(orangeGeom, matOrange);
-          orange.position.set(0, 0.28, -(d/2 - 0.02));
-          const winGeom = new THREE.PlaneGeometry(w*0.6, h*0.4);
-          const win = new THREE.Mesh(winGeom, matGlass);
-          win.position.set(0, 0.15, -(d/2 - 0.06));
+        unitSlots.forEach((slot, idx) => {
+          const unitGeom = new THREE.BoxGeometry(3, floorHeight, depth);
+          const mesh = new THREE.Mesh(unitGeom, matWall);
+          mesh.position.set(slot.x, 0, 0);
 
-          unitGroup.add(mesh);
-          unitGroup.add(bal);
-          unitGroup.add(orange);
-          unitGroup.add(win);
+          const real = inventory.floors[f].units[idx];
 
-          // meta
-          const unitMeta = inventory.floors[f].units[u];
-          unitGroup.userData = {
-            uid: unitMeta.uid,
-            unitType: unitMeta.type,
-            floor: f+1,
-            meters: unitMeta.meters || {},
-            ont: unitMeta.ont || null
+          mesh.userData = {
+            uid: real.uid,
+            type: real.type,
+            floor: real.floor,
           };
 
-          // small label
-          const canvas = document.createElement('canvas');
-          canvas.width = 256; canvas.height = 64;
-          const ctx = canvas.getContext('2d');
-          ctx.fillStyle = 'rgba(255,255,255,0.0)'; ctx.fillRect(0,0,256,64);
-          ctx.fillStyle = '#111'; ctx.font = 'bold 20px Arial'; ctx.fillText(unitMeta.uid.split('-').slice(-1)[0], 8, 36);
-          const tex = new THREE.CanvasTexture(canvas);
-          const sprite = new THREE.Sprite(new THREE.SpriteMaterial({map:tex}));
-          sprite.scale.set(6, 1.5, 1);
-          sprite.position.set(0, h/2 - 0.5, d/2 + 0.5);
-          unitGroup.add(sprite);
-
-          unitGroup.position.set(pos.x, 0, 0);
-          floorGroup.add(unitGroup);
-
-          clickable.push(unitGroup);
-        }
+          clickable.push(mesh);
+          floorGroup.add(mesh);
+        });
 
         building.add(floorGroup);
       }
-
-      // dispatch event to UI listing ready if needed
-      window.dispatchEvent(new CustomEvent("ochiga-scene-ready"));
     }
 
-    // raycaster & clicks
+    // ======================================================
+    // CLICK HANDLER
+    // ======================================================
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
     let selected = null;
 
-    function onPointerDown(event){
+    function onClick(event) {
       const rect = renderer.domElement.getBoundingClientRect();
       mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-      mouse.y = - ((event.clientY - rect.top) / rect.height) * 2 + 1;
+      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
       raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(clickable, true);
-      if(intersects.length > 0){
-        let o = intersects[0].object;
-        while(o && !o.userData?.uid) { o = o.parent; }
-        if(o){
-          // highlight scale
-          if(selected && selected !== o) selected.scale.set(1,1,1);
-          selected = o;
-          selected.scale.set(1.03,1.03,1.03);
-          // send event to UI
-          window.dispatchEvent(new CustomEvent("ochiga-select-unit", {detail: selected.userData}));
-        }
+      const hit = raycaster.intersectObjects(clickable);
+
+      if (hit.length) {
+        const unit = hit[0].object;
+
+        if (selected && selected !== unit) selected.scale.set(1, 1, 1);
+        selected = unit;
+        selected.scale.set(1.05, 1.05, 1.05);
+
+        window.dispatchEvent(
+          new CustomEvent("ochiga-select-unit", {
+            detail: unit.userData,
+          })
+        );
       }
     }
 
-    renderer.domElement.addEventListener("pointerdown", onPointerDown);
+    renderer.domElement.addEventListener("pointerdown", onClick);
 
-    // focus floor based on UI clicks
-    function onFocusFloor(e){
-      const floor = e.detail;
-      const y = (floor - 0.5) * 3.2;
-      controls.target.set(0, y + 0.8, 0);
-      controls.update();
+    // Animation
+    function animate() {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
     }
-    window.addEventListener("ochiga-focus-floor", onFocusFloor);
-
-    // resize handling
-    function onWindowResize(){
-      renderer.setSize(container.clientWidth, container.clientHeight);
-      camera.aspect = container.clientWidth / container.clientHeight;
-      camera.updateProjectionMatrix();
-    }
-    window.addEventListener("resize", onWindowResize);
-
-    // animate
-    function animate(){ requestAnimationFrame(animate); renderer.render(scene, camera); }
     animate();
 
-    // cleanup
-    return () => {
-      renderer.domElement.removeEventListener("pointerdown", onPointerDown);
-      window.removeEventListener("resize", onWindowResize);
-      window.removeEventListener("ochiga-focus-floor", onFocusFloor);
-      container.removeChild(renderer.domElement);
-      // dispose scene
-    };
+    return () => container.removeChild(renderer.domElement);
   }, []);
 
-  return <div ref={containerRef} style={{width:"100%", height:"100%"}} />;
+  return (
+    <div
+      ref={containerRef}
+      style={{ width: "100%", height: "100%", background: "#eef2f5" }}
+    />
+  );
 }
