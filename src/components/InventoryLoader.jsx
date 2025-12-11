@@ -42,7 +42,11 @@ export default function InventoryLoader(){
 
   // listen for custom event dispatched by ThreeScene to set selected unit
   useEffect(()=>{
-    function onSel(e){ setSelected(e.detail); }
+    function onSel(e){
+      setSelected(e.detail);
+      // open mobile drawer when a unit is selected
+      if(window._ochigaToggleDrawer) window._ochigaToggleDrawer(true);
+    }
     window.addEventListener("ochiga-select-unit", onSel);
     return ()=>window.removeEventListener("ochiga-select-unit", onSel);
   },[]);
@@ -62,7 +66,11 @@ export default function InventoryLoader(){
             <div style={{fontWeight:700, marginTop:8}}>Floor {f.floor}</div>
             <div>
               {f.units.map(u => (
-                <div key={u.uid} className="chip" onClick={()=>window.dispatchEvent(new CustomEvent("ochiga-focus-floor", {detail: f.floor}))}>
+                <div
+                  key={u.uid}
+                  className="chip"
+                  onClick={()=>window.dispatchEvent(new CustomEvent("ochiga-focus-floor", {detail: f.floor}))}
+                >
                   {u.uid.split("-").slice(-1)[0]}
                 </div>
               ))}
