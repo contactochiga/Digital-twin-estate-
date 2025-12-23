@@ -1,40 +1,21 @@
-import { createScene } from "./core/scene";
-import { createCamera } from "./core/camera";
-import { createRenderer } from "./core/renderer";
-import { createEstate } from "./estate/Estate";
-import { setupInspector } from "./ui/Inspector";
-import * as THREE from "three";
+// src/App.jsx
+import { useEffect } from "react";
+import { startApp } from "./startApp"; // move engine logic here
 
-export function startApp() {
-  const scene = createScene();
-  const camera = createCamera();
-  const renderer = createRenderer();
+export default function App() {
+  useEffect(() => {
+    startApp();
+  }, []);
 
-  // Lights
-  scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-  const sun = new THREE.DirectionalLight(0xffffff, 1);
-  sun.position.set(80, 120, 80);
-  scene.add(sun);
-
-  // Ground
-  const ground = new THREE.Mesh(
-    new THREE.PlaneGeometry(500, 500),
-    new THREE.MeshStandardMaterial({ color: 0xeaeaea })
+  return (
+    <div
+      id="ochiga-canvas-root"
+      style={{
+        width: "100vw",
+        height: "100vh",
+        overflow: "hidden",
+        background: "#0b0d11"
+      }}
+    />
   );
-  ground.rotation.x = -Math.PI / 2;
-  scene.add(ground);
-
-  // Estate
-  const estate = createEstate();
-  scene.add(estate);
-
-  // UI
-  setupInspector();
-
-  function animate() {
-    requestAnimationFrame(animate);
-    renderer.render(scene, camera);
-  }
-
-  animate();
 }
