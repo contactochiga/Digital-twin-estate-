@@ -1,30 +1,77 @@
 import * as THREE from "three";
 
-export function createDTBuilding(id) {
-  const g = new THREE.Group();
-  g.name = id;
+export function createDTBuilding({
+  id,
+  position = { x: 0, y: 0, z: 0 }
+}) {
+  const building = new THREE.Group();
+  building.name = id;
 
-  const base = new THREE.Mesh(
-    new THREE.BoxGeometry(18, 6, 14),
-    new THREE.MeshStandardMaterial({ color: 0xffffff })
-  );
-  base.position.y = 3;
-  g.add(base);
+  const floorHeight = 4;
 
-  const upper = new THREE.Mesh(
-    new THREE.BoxGeometry(16, 6, 12),
-    new THREE.MeshStandardMaterial({ color: 0xf0f0f0 })
-  );
-  upper.position.y = 9;
-  g.add(upper);
+  const matWall = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    roughness: 0.65
+  });
 
-  const pent = new THREE.Mesh(
-    new THREE.BoxGeometry(12, 4, 10),
-    new THREE.MeshStandardMaterial({ color: 0xe6e6e6 })
-  );
-  pent.position.y = 13;
-  g.add(pent);
+  const matGlass = new THREE.MeshStandardMaterial({
+    color: 0x88ccff,
+    transparent: true,
+    opacity: 0.4
+  });
 
-  g.userData = { type: "DT", building: id };
-  return g;
+  const matCore = new THREE.MeshStandardMaterial({
+    color: 0x6f2020
+  });
+
+  const floors = [
+    { level: 0, name: "GROUND", rooms: ["Living", "Kitchen", "Guest Suite"] },
+    { level: 1, name: "FAMILY", rooms: ["Bedrooms 2–4", "Family Lounge"] },
+    { level: 2, name: "PENTHOUSE", rooms: ["Master Suite", "Private Terrace"] }
+  ];
+
+  floors.forEach((f) => {
+    const floor = new THREE.Group();
+    floor.name = `${id}-FLOOR-${f.level}`;
+
+    // slab
+    const slab = new THREE.Mesh(
+      new THREE.BoxGeometry(24, 0.25, 20),
+      matWall
+    );
+    slab.position.y = f.level * floorHeight;
+    floor.add(slab);
+
+    // glass shell
+    const shell = new THREE.Mesh(
+      new THREE.BoxGeometry(23.8, floorHeight, 19.8),
+      matGlass
+    );
+    shell.position.y = f.level * floorHeight + floorHeight / 2;
+    floor.add(shell);
+
+    // vertical core (A1 / E1 / R1)
+    const core = new THREE.Mesh(
+      new THREE.BoxGeometry(4, floorHeight, 8),
+      matCore
+    );
+    core.position.set(8, f.level * floorHeight + floorHeight / 2, 4);
+    floor.add(core);
+
+    floor.userData = {
+      buildingId: id,
+      floor: f.name,
+      rooms: f.rooms
+    };
+
+    building.add(floor);
+  });
+
+  building.position.set(position.x, position.y, position.z);
+  building.userData = {
+    type: "DT",
+    estateControlled: true
+  };
+
+  return building;
 }
