@@ -29,3 +29,23 @@ export function createCamera() {
 
   return camera;
 }
+
+/**
+ * Smoothly focus camera + controls on a selected object
+ */
+export function focusOnObject(camera, controls, object) {
+  const box = new THREE.Box3().setFromObject(object);
+  const center = box.getCenter(new THREE.Vector3());
+  const size = box.getSize(new THREE.Vector3());
+
+  const maxDim = Math.max(size.x, size.y, size.z);
+  const distance = maxDim * 2.2;
+
+  const direction = new THREE.Vector3(1, 1, 1).normalize();
+  const newPosition = center.clone().add(direction.multiplyScalar(distance));
+
+  // Smooth move
+  camera.position.lerp(newPosition, 0.8);
+  controls.target.lerp(center, 0.8);
+  controls.update();
+}
