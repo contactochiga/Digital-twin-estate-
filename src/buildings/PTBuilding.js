@@ -33,7 +33,6 @@ export function createPTBuilding(id) {
     const floor = new THREE.Group();
     floor.name = `${id}-FLOOR-${i + 1}`;
 
-    // slab
     const slab = new THREE.Mesh(
       new THREE.BoxGeometry(24, 0.4, 20),
       matWall
@@ -41,7 +40,6 @@ export function createPTBuilding(id) {
     slab.position.y = i * FLOOR_HEIGHT + 0.2;
     floor.add(slab);
 
-    // facade shell
     const shell = new THREE.Mesh(
       new THREE.BoxGeometry(23.8, FLOOR_HEIGHT, 19.8),
       matGlass
@@ -49,7 +47,6 @@ export function createPTBuilding(id) {
     shell.position.y = i * FLOOR_HEIGHT + FLOOR_HEIGHT / 2;
     floor.add(shell);
 
-    // balcony
     const balcony = new THREE.Mesh(
       new THREE.BoxGeometry(6, 0.3, 2),
       matBalcony
@@ -57,10 +54,13 @@ export function createPTBuilding(id) {
     balcony.position.set(0, i * FLOOR_HEIGHT + 1.3, -11);
     floor.add(balcony);
 
+    // ✅ FLOOR DATA
     floor.userData = {
+      selectable: true,
+      entity: "FLOOR",
       estateId: "OCH",
       buildingId: id,
-      type: "PT",
+      buildingType: "PT",
       floor: i + 1
     };
 
@@ -78,19 +78,29 @@ export function createPTBuilding(id) {
   building.add(core);
 
   // -------------------------
-  // ENTRANCE MARKER
+  // ENTRANCE
   // -------------------------
   const entrance = new THREE.Mesh(
     new THREE.BoxGeometry(6, 3, 0.6),
     new THREE.MeshStandardMaterial({ color: 0x111111 })
   );
   entrance.position.set(0, 1.5, -10.5);
+  entrance.userData = {
+    selectable: true,
+    entity: "ENTRANCE",
+    buildingId: id,
+    buildingType: "PT"
+  };
   building.add(entrance);
 
+  // ✅ BUILDING DATA
   building.userData = {
-    estateControlled: true,
+    selectable: true,
+    entity: "BUILDING",
     type: "PT",
-    floors: 5
+    buildingId: id,
+    floors: 5,
+    estateControlled: true
   };
 
   return building;
