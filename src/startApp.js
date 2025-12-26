@@ -11,13 +11,17 @@ export function startApp() {
   const container = document.getElementById("ochiga-canvas-root");
   if (!container) return;
 
-  // --- Core ---
+  // -------------------------
+  // CORE
+  // -------------------------
   const scene = createScene();
   const camera = createCamera();
   const renderer = createRenderer(container);
   const controls = createControls(camera, renderer);
 
-  // --- Lights ---
+  // -------------------------
+  // LIGHTS
+  // -------------------------
   scene.add(new THREE.AmbientLight(0xffffff, 0.6));
 
   const sun = new THREE.DirectionalLight(0xffffff, 1);
@@ -25,7 +29,9 @@ export function startApp() {
   sun.castShadow = true;
   scene.add(sun);
 
-  // --- Ground ---
+  // -------------------------
+  // GROUND
+  // -------------------------
   const ground = new THREE.Mesh(
     new THREE.PlaneGeometry(2000, 2000),
     new THREE.MeshStandardMaterial({
@@ -37,14 +43,20 @@ export function startApp() {
   ground.receiveShadow = true;
   scene.add(ground);
 
-  // --- Estate ---
+  // -------------------------
+  // ESTATE
+  // -------------------------
   const estate = createEstate();
   scene.add(estate);
 
-  // --- UI ---
+  // -------------------------
+  // UI
+  // -------------------------
   setupInspector();
 
-  // --- Resize (CRITICAL for mobile) ---
+  // -------------------------
+  // RESIZE (MOBILE SAFE)
+  // -------------------------
   function resize() {
     const w = container.clientWidth;
     const h = container.clientHeight;
@@ -59,7 +71,9 @@ export function startApp() {
   window.addEventListener("resize", resize);
   resize();
 
-  // --- Render loop ---
+  // -------------------------
+  // RENDER LOOP
+  // -------------------------
   let running = true;
 
   function animate() {
@@ -71,7 +85,9 @@ export function startApp() {
 
   animate();
 
-  // --- Cleanup (React-safe) ---
+  // -------------------------
+  // CLEANUP (REACT SAFE)
+  // -------------------------
   return () => {
     running = false;
     window.removeEventListener("resize", resize);
