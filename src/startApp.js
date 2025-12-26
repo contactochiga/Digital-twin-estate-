@@ -7,6 +7,7 @@ import { createControls } from "./core/controls";
 import { createEstate } from "./estate/Estate";
 import { setupInspector } from "./ui/Inspector";
 import { setupSelection } from "./core/selection";
+import { focusOnObject } from "./core/focus"; // ✅ ADD THIS
 
 export function startApp() {
   const container = document.getElementById("ochiga-canvas-root");
@@ -38,10 +39,22 @@ export function startApp() {
   scene.add(ground);
 
   // ESTATE
-  scene.add(createEstate());
+  const estate = createEstate();
+  scene.add(estate);
 
   // UI
   setupInspector();
+
+  // 🎯 CAMERA AUTO-FOCUS ON SELECTION
+  window.addEventListener("ochiga-select", (e) => {
+    const { buildingId, __world } = e.detail || {};
+    if (!buildingId) return;
+
+    const target = scene.getObjectByName(buildingId);
+    if (target) {
+      focusOnObject(camera, controls, target);
+    }
+  });
 
   // RESIZE
   function resize() {
