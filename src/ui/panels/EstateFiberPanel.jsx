@@ -1,41 +1,58 @@
-export function EstateFiberPanel({ data }) {
-  return (
-    <div className="panel">
-      <h3>🛜 Estate Fiber Network</h3>
+// src/ui/panels/EstateFiberPanel.jsx
 
-      <div className="metric">
-        <span>Total Bandwidth</span>
-        <strong>{data.totalGbps} Gbps</strong>
+export function EstateFiberPanel() {
+  return `
+    <div class="info-box">
+      <h3>Estate Fiber Network</h3>
+      <div class="small">Centralised broadband & data backbone</div>
+
+      <hr/>
+
+      <div><b>Backbone Type:</b> Single-Mode Fiber</div>
+      <div><b>Provider:</b> Estate Core (Multi-ISP Ready)</div>
+      <div><b>Topology:</b> Ring + Redundant Spines</div>
+
+      <hr/>
+
+      <div class="small">Live Network Health</div>
+
+      <div style="margin-top:10px">
+        <div>Backbone Capacity</div>
+        <div style="background:#222;height:10px;border-radius:6px;">
+          <div style="width:92%;height:10px;background:#8b5cf6;border-radius:6px;"></div>
+        </div>
       </div>
 
-      <div className="metric">
-        <span>Active Buildings</span>
-        <strong>{data.buildings}</strong>
+      <div style="margin-top:10px">
+        <div>Distribution Load</div>
+        <div style="background:#222;height:10px;border-radius:6px;">
+          <div style="width:68%;height:10px;background:#22c55e;border-radius:6px;"></div>
+        </div>
       </div>
 
-      <div className="metric">
-        <span>Connected Units</span>
-        <strong>{data.units}</strong>
+      <div style="margin-top:10px">
+        <div>Latency (Avg)</div>
+        <div style="background:#222;height:10px;border-radius:6px;">
+          <div style="width:85%;height:10px;background:#3b82f6;border-radius:6px;"></div>
+        </div>
       </div>
 
-      <div className="metric">
-        <span>Latency (avg)</span>
-        <strong>{data.latency} ms</strong>
+      <hr/>
+
+      <div class="small">Coverage Status</div>
+
+      <ul style="margin-top:8px; padding-left:16px;">
+        <li>PT Buildings: <b>Connected</b></li>
+        <li>DT Buildings: <b>Connected</b></li>
+        <li>Security Systems: <b>Dedicated VLAN</b></li>
+        <li>Future Expansion: <b>Available</b></li>
+      </ul>
+
+      <hr/>
+
+      <div class="small">
+        All fiber infrastructure is estate-owned and centrally monitored.
       </div>
-
-      {/* Traffic graph */}
-      <svg width="100%" height="120">
-        <polyline
-          points="0,80 40,60 80,50 120,40 160,45 200,30"
-          fill="none"
-          stroke="#5dade2"
-          strokeWidth="3"
-        />
-      </svg>
-
-      <p className="small">
-        Fiber feeds CCTV, smart meters, access control, and Oyi AI.
-      </p>
     </div>
-  );
+  `;
 }
