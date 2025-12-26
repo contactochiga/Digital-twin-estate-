@@ -1,34 +1,43 @@
-export function EstateOverviewPanel({ data }) {
-  return (
-    <div className="panel">
-      <h3>🏘 Estate Overview</h3>
+// src/ui/panels/EstateOverviewPanel.jsx
 
-      <div className="metric">
-        <span>Total Buildings</span>
-        <strong>{data.buildings}</strong>
+export function EstateOverviewPanel() {
+  return `
+    <div class="info-box">
+      <h3>Estate Overview</h3>
+
+      <div class="small">Real-time estate health snapshot</div>
+
+      <hr/>
+
+      <div><b>Total Buildings:</b> 14</div>
+      <div><b>Total Units:</b> 220</div>
+      <div><b>Occupancy:</b> 92%</div>
+      <div><b>Active Residents:</b> 610</div>
+
+      <hr/>
+
+      <div class="small">System Health</div>
+
+      <div style="margin-top:8px">
+        <div>Power Availability</div>
+        <div style="background:#222;height:8px;border-radius:4px;">
+          <div style="width:92%;height:8px;background:#4ade80;border-radius:4px;"></div>
+        </div>
       </div>
 
-      <div className="metric">
-        <span>Total Units</span>
-        <strong>{data.units}</strong>
+      <div style="margin-top:8px">
+        <div>Water Supply</div>
+        <div style="background:#222;height:8px;border-radius:4px;">
+          <div style="width:88%;height:8px;background:#60a5fa;border-radius:4px;"></div>
+        </div>
       </div>
 
-      <div className="metric">
-        <span>Residents</span>
-        <strong>{data.residents}</strong>
-      </div>
-
-      <div className="metric">
-        <span>Occupancy Rate</span>
-        <strong>{data.occupancy}%</strong>
-      </div>
-
-      <div className="info-box">
-        <p className="small">
-          Estate overview aggregates live data from power, water, fiber,
-          and security systems.
-        </p>
+      <div style="margin-top:8px">
+        <div>Network Uptime</div>
+        <div style="background:#222;height:8px;border-radius:4px;">
+          <div style="width:99%;height:8px;background:#c084fc;border-radius:4px;"></div>
+        </div>
       </div>
     </div>
-  );
+  `;
 }
