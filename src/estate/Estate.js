@@ -13,7 +13,7 @@ export function createEstate() {
   estate.name = "OCH-ESTATE-V1";
 
   // -------------------------
-  // ROADS (CORRECT)
+  // ROADS
   // -------------------------
   ROADS.forEach((road) => {
     estate.add(createRoad(road));
@@ -31,26 +31,26 @@ export function createEstate() {
   estate.add(pt2);
 
   // -------------------------
-  // DT BUILDINGS (FROM PLOTS)
+  // DT BUILDINGS
   // -------------------------
   PLOTS.forEach((plot) => {
-    if (plot.type === "DT") {
-      const dt = createDTBuilding({
-        id: plot.id,
-        position: {
-          x: plot.position.x,
-          y: 0,
-          z: plot.position.z
-        },
-        rotation: plot.rotation
-      });
+    if (plot.type !== "DT") return;
 
-      estate.add(dt);
-    }
+    const dt = createDTBuilding({
+      id: plot.id,
+      position: {
+        x: plot.position.x,
+        y: 0,
+        z: plot.position.z
+      },
+      rotation: plot.rotation
+    });
+
+    estate.add(dt);
   });
 
   // -------------------------
-  // ESTATE MEP
+  // ESTATE MEP (CENTRAL)
   // -------------------------
   estate.add(createMEP());
 
