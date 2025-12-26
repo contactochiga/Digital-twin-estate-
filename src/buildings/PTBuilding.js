@@ -3,116 +3,93 @@ import * as THREE from "three";
 import { registerSelectable } from "../core/selection";
 
 const FLOOR_HEIGHT = 3.6;
-const BUILDING_WIDTH = 24;
-const BUILDING_DEPTH = 20;
 
 export function createPTBuilding(id) {
   const building = new THREE.Group();
   building.name = id;
 
-  const matWall = new THREE.MeshStandardMaterial({
+  const matUnit = new THREE.MeshStandardMaterial({
     color: 0xf7f4f1,
     roughness: 0.65
-  });
-
-  const matBalcony = new THREE.MeshStandardMaterial({
-    color: 0xdedede
   });
 
   const matGlass = new THREE.MeshStandardMaterial({
     color: 0x88ccff,
     transparent: true,
-    opacity: 0.4
+    opacity: 0.35
   });
 
-  const matCore = new THREE.MeshStandardMaterial({
-    color: 0xe8602f
-  });
+  const matCore = new THREE.MeshStandardMaterial({ color: 0xe8602f });
 
   // -------------------------
-  // FLOORS + UNITS
+  // FLOORS
   // -------------------------
-  for (let i = 0; i < 5; i++) {
-    const floor = new THREE.Group();
-    floor.name = `${id}-FLOOR-${i + 1}`;
+  for (let floorIndex = 0; floorIndex < 5; floorIndex++) {
+    const floorGroup = new THREE.Group();
+    const floorNumber = floorIndex + 1;
+    floorGroup.name = `${id}-FLOOR-${floorNumber}`;
 
-    const floorY = i * FLOOR_HEIGHT;
+    const yBase = floorIndex * FLOOR_HEIGHT;
 
-    // Slab
+    // ---- FLOOR SLAB (non-selectable)
     const slab = new THREE.Mesh(
-      new THREE.BoxGeometry(BUILDING_WIDTH, 0.4, BUILDING_DEPTH),
-      matWall
+      new THREE.BoxGeometry(24, 0.25, 20),
+      matUnit
     );
-    slab.position.y = floorY + 0.2;
-    floor.add(slab);
-
-    // Facade shell
-    const shell = new THREE.Mesh(
-      new THREE.BoxGeometry(BUILDING_WIDTH - 0.2, FLOOR_HEIGHT, BUILDING_DEPTH - 0.2),
-      matGlass
-    );
-    shell.position.y = floorY + FLOOR_HEIGHT / 2;
-    floor.add(shell);
-
-    // Balcony (shared visual)
-    const balcony = new THREE.Mesh(
-      new THREE.BoxGeometry(6, 0.3, 2),
-      matBalcony
-    );
-    balcony.position.set(0, floorY + 1.3, -11);
-    floor.add(balcony);
+    slab.position.y = yBase + 0.12;
+    floorGroup.add(slab);
 
     // -------------------------
-    // UNITS (4 per floor)
+    // UNITS (A, B, C, D)
     // -------------------------
-    const unitWidth = BUILDING_WIDTH / 4;
     const units = [
-      { code: "A", type: "3B", bedrooms: 3 },
-      { code: "B", type: "2B", bedrooms: 2 },
-      { code: "C", type: "3B", bedrooms: 3 },
-      { code: "D", type: "2B", bedrooms: 2 }
+      { key: "A", x: -6, z: -5, beds: 2 },
+      { key: "B", x:  6, z: -5, beds: 3 },
+      { key: "C", x: -6, z:  5, beds: 2 },
+      { key: "D", x:  6, z:  5, beds: 3 }
     ];
 
-    units.forEach((u, index) => {
-      const unit = new THREE.Mesh(
-        new THREE.BoxGeometry(unitWidth - 0.4, FLOOR_HEIGHT, BUILDING_DEPTH - 0.6),
+    units.forEach((u) => {
+      const unit = new THREE.Group();
+      const unitId = `${id}-F${floorNumber}-${u.key}`;
+      unit.name = unitId;
+
+      // Unit volume
+      const body = new THREE.Mesh(
+        new THREE.BoxGeometry(11.5, FLOOR_HEIGHT - 0.3, 9.5),
         matGlass
       );
+      body.position.set(u.x, yBase + FLOOR_HEIGHT / 2, u.z);
+      unit.add(body);
 
-      unit.position.set(
-        -BUILDING_WIDTH / 2 + unitWidth * index + unitWidth / 2,
-        floorY + FLOOR_HEIGHT / 2,
-        0
-      );
-
-      // 🔑 UNIT METADATA
+      // Unit metadata
       unit.userData = {
         selectable: true,
         entity: "UNIT",
-        estateId: "OCH",
-        buildingType: "PT",
+        unitId,
+        unitType: u.beds === 3 ? "3 Bedroom" : "2 Bedroom",
+        beds: u.beds,
+        floor: floorNumber,
         buildingId: id,
-        floor: i + 1,
-        unit: u.code,
-        unitType: u.type,
-        bedrooms: u.bedrooms
+        buildingType: "PT",
+        estateControlled: true
       };
 
       registerSelectable(unit);
-      floor.add(unit);
+      floorGroup.add(unit);
     });
 
-    // Floor metadata
-    floor.userData = {
+    // Floor metadata (still selectable)
+    floorGroup.userData = {
       selectable: true,
       entity: "FLOOR",
-      buildingType: "PT",
+      floor: floorNumber,
       buildingId: id,
-      floor: i + 1
+      buildingType: "PT"
     };
 
-    registerSelectable(floor);
-    building.add(floor);
+    registerSelectable(floorGroup);
+    building.add(floorGroup);
   }
 
   // -------------------------
@@ -126,35 +103,18 @@ export function createPTBuilding(id) {
   building.add(core);
 
   // -------------------------
-  // ENTRANCE
-  // -------------------------
-  const entrance = new THREE.Mesh(
-    new THREE.BoxGeometry(6, 3, 0.6),
-    new THREE.MeshStandardMaterial({ color: 0x111111 })
-  );
-  entrance.position.set(0, 1.5, -10.5);
-  entrance.userData = {
-    selectable: true,
-    entity: "ENTRANCE",
-    buildingId: id,
-    buildingType: "PT"
-  };
-  registerSelectable(entrance);
-  building.add(entrance);
-
-  // -------------------------
   // BUILDING METADATA
   // -------------------------
   building.userData = {
     selectable: true,
     entity: "BUILDING",
-    type: "PT",
     buildingId: id,
+    buildingType: "PT",
     floors: 5,
+    unitsPerFloor: 4,
     estateControlled: true
   };
 
   registerSelectable(building);
-
   return building;
 }
