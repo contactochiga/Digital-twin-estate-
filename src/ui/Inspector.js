@@ -5,6 +5,7 @@ import { EstatePowerPanel } from "./panels/EstatePowerPanel";
 import { EstateWaterPanel } from "./panels/EstateWaterPanel";
 import { EstateFiberPanel } from "./panels/EstateFiberPanel";
 import { EstateSecurityPanel } from "./panels/EstateSecurityPanel";
+import { renderUnitCharts } from "./charts/UnitCharts";
 
 export function setupInspector() {
   const panel = document.getElementById("ui-pane");
@@ -30,7 +31,7 @@ export function setupInspector() {
   const content = document.getElementById("inspector-content");
 
   // -------------------------
-  // ESTATE PANELS (REAL)
+  // ESTATE PANELS
   // -------------------------
   document.getElementById("estate-overview").onclick = () => {
     content.innerHTML = EstateOverviewPanel();
@@ -59,7 +60,9 @@ export function setupInspector() {
     const d = e.detail;
     if (!d) return;
 
+    // =========================
     // UNIT LEVEL
+    // =========================
     if (d.entity === "UNIT") {
       content.innerHTML = `
         <b>🏠 Unit</b><br/>
@@ -68,11 +71,18 @@ export function setupInspector() {
         <b>Unit:</b> ${d.unit}<br/>
         <b>Type:</b> ${d.unitType}<br/>
         <b>Estate Controlled:</b> Yes
+        <hr/>
+        <div id="unit-charts"></div>
       `;
+
+      // ✅ Render live charts
+      renderUnitCharts(d);
       return;
     }
 
+    // =========================
     // FLOOR LEVEL
+    // =========================
     if (d.entity === "FLOOR") {
       content.innerHTML = `
         <b>🧱 Floor</b><br/>
@@ -84,7 +94,9 @@ export function setupInspector() {
       return;
     }
 
+    // =========================
     // BUILDING LEVEL
+    // =========================
     if (d.entity === "BUILDING") {
       content.innerHTML = `
         <b>🏢 Building</b><br/>
@@ -96,9 +108,11 @@ export function setupInspector() {
       return;
     }
 
-    // FALLBACK
+    // =========================
+    // FALLBACK (DEBUG SAFE)
+    // =========================
     content.innerHTML = `
-      <b>Selection</b><br/>
+      <b>Selection</b>
       <pre>${JSON.stringify(d, null, 2)}</pre>
     `;
   });
