@@ -8,7 +8,7 @@ let selectableObjects = [];
 let currentSelection = null;
 let originalMaterials = new Map();
 
-const HIGHLIGHT_COLOR = new THREE.Color(0xffa500); // orange glow
+const HIGHLIGHT_COLOR = new THREE.Color(0xffa500);
 
 export function registerSelectable(object) {
   selectableObjects.push(object);
@@ -45,7 +45,6 @@ export function setupSelection(renderer, camera) {
 
     raycaster.setFromCamera(pointer, camera);
     const hits = raycaster.intersectObjects(selectableObjects, true);
-
     if (!hits.length) return;
 
     let obj = hits[0].object;
@@ -54,13 +53,19 @@ export function setupSelection(renderer, camera) {
     }
     if (!obj) return;
 
-    // Clear previous
-    if (currentSelection) {
-      clearHighlight(currentSelection);
-    }
-
+    if (currentSelection) clearHighlight(currentSelection);
     currentSelection = obj;
     applyHighlight(obj);
+
+    // ✅ Store world position (important for next steps)
+    const worldPos = new THREE.Vector3();
+    obj.getWorldPosition(worldPos);
+
+    obj.userData.__world = {
+      x: worldPos.x,
+      y: worldPos.y,
+      z: worldPos.z
+    };
 
     window.dispatchEvent(
       new CustomEvent("ochiga-select", {
