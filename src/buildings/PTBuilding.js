@@ -1,5 +1,6 @@
 // src/buildings/PTBuilding.js
 import * as THREE from "three";
+import { registerSelectable } from "../core/selection"; // ✅ ADD
 
 const FLOOR_HEIGHT = 3.6;
 
@@ -7,28 +8,15 @@ export function createPTBuilding(id) {
   const building = new THREE.Group();
   building.name = id;
 
-  const matWall = new THREE.MeshStandardMaterial({
-    color: 0xf7f4f1,
-    roughness: 0.65
-  });
-
-  const matBalcony = new THREE.MeshStandardMaterial({
-    color: 0xdedede
-  });
-
+  const matWall = new THREE.MeshStandardMaterial({ color: 0xf7f4f1, roughness: 0.65 });
+  const matBalcony = new THREE.MeshStandardMaterial({ color: 0xdedede });
   const matGlass = new THREE.MeshStandardMaterial({
     color: 0x88ccff,
     transparent: true,
     opacity: 0.4
   });
+  const matCore = new THREE.MeshStandardMaterial({ color: 0xe8602f });
 
-  const matCore = new THREE.MeshStandardMaterial({
-    color: 0xe8602f
-  });
-
-  // -------------------------
-  // FLOORS
-  // -------------------------
   for (let i = 0; i < 5; i++) {
     const floor = new THREE.Group();
     floor.name = `${id}-FLOOR-${i + 1}`;
@@ -54,22 +42,18 @@ export function createPTBuilding(id) {
     balcony.position.set(0, i * FLOOR_HEIGHT + 1.3, -11);
     floor.add(balcony);
 
-    // ✅ FLOOR DATA
     floor.userData = {
       selectable: true,
       entity: "FLOOR",
-      estateId: "OCH",
-      buildingId: id,
       buildingType: "PT",
+      buildingId: id,
       floor: i + 1
     };
 
+    registerSelectable(floor); // ✅ REGISTER FLOOR
     building.add(floor);
   }
 
-  // -------------------------
-  // CORE (STAIRS + LIFT)
-  // -------------------------
   const core = new THREE.Mesh(
     new THREE.BoxGeometry(4, FLOOR_HEIGHT * 5, 6),
     matCore
@@ -77,9 +61,6 @@ export function createPTBuilding(id) {
   core.position.set(8, (FLOOR_HEIGHT * 5) / 2, 3);
   building.add(core);
 
-  // -------------------------
-  // ENTRANCE
-  // -------------------------
   const entrance = new THREE.Mesh(
     new THREE.BoxGeometry(6, 3, 0.6),
     new THREE.MeshStandardMaterial({ color: 0x111111 })
@@ -91,9 +72,9 @@ export function createPTBuilding(id) {
     buildingId: id,
     buildingType: "PT"
   };
+  registerSelectable(entrance); // ✅ REGISTER ENTRANCE
   building.add(entrance);
 
-  // ✅ BUILDING DATA
   building.userData = {
     selectable: true,
     entity: "BUILDING",
@@ -102,6 +83,8 @@ export function createPTBuilding(id) {
     floors: 5,
     estateControlled: true
   };
+
+  registerSelectable(building); // ✅ REGISTER BUILDING
 
   return building;
 }
