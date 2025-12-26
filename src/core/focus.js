@@ -1,69 +1,32 @@
 // src/core/focus.js
 import * as THREE from "three";
 
-let activeTween = null;
+/**
+ * Smoothly focuses camera on a selected object
+ */
+export function focusOnObject(camera, controls, object) {
+  if (!object) return;
 
-function animateCamera(camera, controls, targetPos, camPos) {
-  if (activeTween) cancelAnimationFrame(activeTween);
+  const box = new THREE.Box3().setFromObject(object);
+  const center = new THREE.Vector3();
+  const size = new THREE.Vector3();
 
-  const startCam = camera.position.clone();
-  const startTarget = controls.target.clone();
+  box.getCenter(center);
+  box.getSize(size);
 
-  const duration = 600; // ms
-  const start = performance.now();
+  // distance based on object size
+  const maxDim = Math.max(size.x, size.y, size.z);
+  const distance = maxDim * 2.2;
 
-  function step(now) {
-    const t = Math.min((now - start) / duration, 1);
-    const ease = t * (2 - t); // easeOutQuad
+  // direction from current camera to target
+  const dir = new THREE.Vector3()
+    .subVectors(camera.position, controls.target)
+    .normalize();
 
-    camera.position.lerpVectors(startCam, camPos, ease);
-    controls.target.lerpVectors(startTarget, targetPos, ease);
-    controls.update();
+  const newPos = center.clone().add(dir.multiplyScalar(distance));
 
-    if (t < 1) {
-      activeTween = requestAnimationFrame(step);
-    }
-  }
-
-  activeTween = requestAnimationFrame(step);
-}
-
-export function setupCameraFocus(camera, controls) {
-  window.addEventListener("ochiga-select", (e) => {
-    const d = e.detail;
-    if (!d || !d.entity) return;
-
-    let target = new THREE.Vector3();
-    let camPos = new THREE.Vector3();
-
-    // -------------------------
-    // UNIT
-    // -------------------------
-    if (d.entity === "UNIT") {
-      target.set(d.__world?.x || 0, d.__world?.y || 6, d.__world?.z || 0);
-      camPos.set(
-        target.x + 14,
-        target.y + 10,
-        target.z + 14
-      );
-    }
-
-    // -------------------------
-    // FLOOR
-    // -------------------------
-    else if (d.entity === "FLOOR") {
-      target.set(0, d.floor * 3.6 - 1.8, 0);
-      camPos.set(28, target.y + 18, 28);
-    }
-
-    // -------------------------
-    // BUILDING
-    // -------------------------
-    else if (d.entity === "BUILDING") {
-      target.set(0, 8, 0);
-      camPos.set(60, 50, 60);
-    }
-
-    animateCamera(camera, controls, target, camPos);
-  });
+  // smooth transition
+  camera.position.lerp(newPos, 0.25);
+  controls.target.lerp(center, 0.25);
+  controls.update();
 }
