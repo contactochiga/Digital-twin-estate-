@@ -1,4 +1,5 @@
 // src/ui/Inspector.js
+import { EstateOverviewPanel } from "./panels/EstateOverviewPanel";
 
 export function setupInspector() {
   const panel = document.getElementById("ui-pane");
@@ -23,51 +24,29 @@ export function setupInspector() {
 
   const content = document.getElementById("inspector-content");
 
-  // ---- Estate buttons (temporary content)
+  // ✅ Estate Overview (LIVE PANEL)
   document.getElementById("estate-overview").onclick = () => {
-    content.innerHTML = `
-      <b>Estate Overview</b><br/>
-      Buildings: 14<br/>
-      Units: 220<br/>
-      Occupancy: 92%
-    `;
+    content.innerHTML = EstateOverviewPanel();
   };
 
+  // Temporary placeholders (safe)
   document.getElementById("estate-power").onclick = () => {
-    content.innerHTML = `
-      <b>Power Network</b><br/>
-      Load: 2.4MW<br/>
-      Capacity: 5MW<br/>
-      Uptime: 99.98%
-    `;
+    content.innerHTML = "<b>Power Network</b><br/>Panel coming next.";
   };
 
   document.getElementById("estate-water").onclick = () => {
-    content.innerHTML = `
-      <b>Water & Sewage</b><br/>
-      Water Usage: 480m³/day<br/>
-      Sewage Output: 455m³/day
-    `;
+    content.innerHTML = "<b>Water & Sewage</b><br/>Panel coming next.";
   };
 
   document.getElementById("estate-fiber").onclick = () => {
-    content.innerHTML = `
-      <b>Fiber Network</b><br/>
-      Backbone: 40Gbps<br/>
-      Avg Latency: 8ms
-    `;
+    content.innerHTML = "<b>Fiber Network</b><br/>Panel coming next.";
   };
 
   document.getElementById("estate-security").onclick = () => {
-    content.innerHTML = `
-      <b>Security</b><br/>
-      Cameras: 96<br/>
-      Access Points: 28<br/>
-      Alerts: 0
-    `;
+    content.innerHTML = "<b>Security</b><br/>Panel coming next.";
   };
 
-  // ---- Selection handler (buildings / floors)
+  // ---- Selection handler (buildings / floors / units)
   window.addEventListener("ochiga-select", (e) => {
     const d = e.detail;
     content.innerHTML = `
