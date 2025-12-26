@@ -1,37 +1,74 @@
-export function EstateWaterPanel({ data }) {
-  return (
-    <div className="panel">
-      <h3>💧 Water & Sewage</h3>
+// src/ui/panels/EstateWaterPanel.jsx
 
-      <div className="metric">
-        <span>Daily Water Usage</span>
-        <strong>{data.waterUsage} m³</strong>
+export function EstateWaterPanel() {
+  return `
+    <div class="info-box">
+      <h3>Estate Water & Sewage</h3>
+      <div class="small">Central water supply & wastewater management</div>
+
+      <hr/>
+
+      <div><b>Water Source:</b> Borehole + Municipal Backup</div>
+      <div><b>Storage:</b> Central Overhead & Ground Tanks</div>
+      <div><b>Distribution:</b> Zoned Pressure Lines</div>
+
+      <hr/>
+
+      <div class="small">Live Water Status</div>
+
+      <div style="margin-top:10px">
+        <div>Tank Capacity</div>
+        <div style="background:#222;height:10px;border-radius:6px;">
+          <div style="width:74%;height:10px;background:#0ea5e9;border-radius:6px;"></div>
+        </div>
       </div>
 
-      <div className="metric">
-        <span>Sewage Output</span>
-        <strong>{data.sewageOutput} m³</strong>
+      <div style="margin-top:10px">
+        <div>Network Pressure</div>
+        <div style="background:#222;height:10px;border-radius:6px;">
+          <div style="width:82%;height:10px;background:#22c55e;border-radius:6px;"></div>
+        </div>
       </div>
 
-      <div className="metric">
-        <span>Pressure Status</span>
-        <strong>{data.pressure}</strong>
+      <div style="margin-top:10px">
+        <div>Daily Consumption</div>
+        <div style="background:#222;height:10px;border-radius:6px;">
+          <div style="width:61%;height:10px;background:#f59e0b;border-radius:6px;"></div>
+        </div>
       </div>
 
-      {/* Flow graph */}
-      <svg width="100%" height="120">
-        <polyline
-          points="0,90 40,70 80,75 120,55 160,60 200,45"
-          fill="none"
-          stroke="#3498db"
-          strokeWidth="3"
-        />
-      </svg>
+      <hr/>
 
-      <p className="small">
-        All plumbing infrastructure is centrally monitored and
-        estate-controlled.
-      </p>
+      <div class="small">Sewage System</div>
+
+      <div style="margin-top:10px">
+        <div>Sewage Flow</div>
+        <div style="background:#222;height:10px;border-radius:6px;">
+          <div style="width:56%;height:10px;background:#7c2d12;border-radius:6px;"></div>
+        </div>
+      </div>
+
+      <div style="margin-top:10px">
+        <div>Treatment Load</div>
+        <div style="background:#222;height:10px;border-radius:6px;">
+          <div style="width:48%;height:10px;background:#a16207;border-radius:6px;"></div>
+        </div>
+      </div>
+
+      <hr/>
+
+      <ul style="margin-top:8px; padding-left:16px;">
+        <li>PT Buildings: <b>Connected</b></li>
+        <li>DT Buildings: <b>Connected</b></li>
+        <li>Storm Drainage: <b>Separated</b></li>
+        <li>Leak Detection: <b>Planned</b></li>
+      </ul>
+
+      <hr/>
+
+      <div class="small">
+        All water and sewage systems are centrally monitored and estate-controlled.
+      </div>
     </div>
-  );
+  `;
 }
