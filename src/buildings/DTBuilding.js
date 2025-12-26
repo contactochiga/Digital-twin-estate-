@@ -1,5 +1,6 @@
 // src/buildings/DTBuilding.js
 import * as THREE from "three";
+import { registerSelectable } from "../core/selection"; // ✅ ADD
 
 export function createDTBuilding({
   id,
@@ -11,20 +12,13 @@ export function createDTBuilding({
 
   const floorHeight = 4;
 
-  const matWall = new THREE.MeshStandardMaterial({
-    color: 0xffffff,
-    roughness: 0.65
-  });
-
+  const matWall = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.65 });
   const matGlass = new THREE.MeshStandardMaterial({
     color: 0x88ccff,
     transparent: true,
     opacity: 0.4
   });
-
-  const matCore = new THREE.MeshStandardMaterial({
-    color: 0x6f2020
-  });
+  const matCore = new THREE.MeshStandardMaterial({ color: 0x6f2020 });
 
   const floors = [
     { level: 0, name: "GROUND", rooms: ["Living", "Kitchen", "Guest Suite"] },
@@ -36,7 +30,6 @@ export function createDTBuilding({
     const floor = new THREE.Group();
     floor.name = `${id}-FLOOR-${f.level}`;
 
-    // slab
     const slab = new THREE.Mesh(
       new THREE.BoxGeometry(24, 0.25, 20),
       matWall
@@ -44,7 +37,6 @@ export function createDTBuilding({
     slab.position.y = f.level * floorHeight;
     floor.add(slab);
 
-    // glass shell
     const shell = new THREE.Mesh(
       new THREE.BoxGeometry(23.8, floorHeight, 19.8),
       matGlass
@@ -52,7 +44,6 @@ export function createDTBuilding({
     shell.position.y = f.level * floorHeight + floorHeight / 2;
     floor.add(shell);
 
-    // vertical core (A1 / E1 / R1)
     const core = new THREE.Mesh(
       new THREE.BoxGeometry(4, floorHeight, 8),
       matCore
@@ -60,23 +51,33 @@ export function createDTBuilding({
     core.position.set(8, f.level * floorHeight + floorHeight / 2, 4);
     floor.add(core);
 
+    // ✅ MAKE FLOOR SELECTABLE
     floor.userData = {
+      selectable: true,
+      entity: "FLOOR",
+      buildingType: "DT",
       buildingId: id,
       floor: f.name,
       rooms: f.rooms
     };
 
+    registerSelectable(floor); // ✅ REGISTER FLOOR
     building.add(floor);
   });
 
-  // ✅ APPLY POSITION & ROTATION
   building.position.set(position.x, position.y, position.z);
   building.rotation.y = rotation;
 
+  // ✅ MAKE BUILDING SELECTABLE
   building.userData = {
+    selectable: true,
+    entity: "BUILDING",
     type: "DT",
+    buildingId: id,
     estateControlled: true
   };
+
+  registerSelectable(building); // ✅ REGISTER BUILDING
 
   return building;
 }
