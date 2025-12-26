@@ -1,5 +1,10 @@
 // src/ui/Inspector.js
+
 import { EstateOverviewPanel } from "./panels/EstateOverviewPanel";
+import { EstatePowerPanel } from "./panels/EstatePowerPanel";
+import { EstateWaterPanel } from "./panels/EstateWaterPanel";
+import { EstateFiberPanel } from "./panels/EstateFiberPanel";
+import { EstateSecurityPanel } from "./panels/EstateSecurityPanel";
 
 export function setupInspector() {
   const panel = document.getElementById("ui-pane");
@@ -10,7 +15,7 @@ export function setupInspector() {
     <div class="small">Digital Twin · Estate Level Control</div>
 
     <div class="info-box small">
-      Tap a building, floor, or zone to inspect live data.
+      Tap a building, floor, or unit to inspect live data.
     </div>
 
     <button class="btn" id="estate-overview">Estate Overview</button>
@@ -19,41 +24,82 @@ export function setupInspector() {
     <button class="btn" id="estate-fiber">Fiber Network</button>
     <button class="btn" id="estate-security">Security</button>
 
-    <div id="inspector-content" class="info-box"></div>
+    <div id="inspector-content" class="info-box small"></div>
   `;
 
   const content = document.getElementById("inspector-content");
 
-  // ✅ Estate Overview (LIVE PANEL)
+  // -------------------------
+  // ESTATE PANELS (REAL)
+  // -------------------------
   document.getElementById("estate-overview").onclick = () => {
     content.innerHTML = EstateOverviewPanel();
   };
 
-  // Temporary placeholders (safe)
   document.getElementById("estate-power").onclick = () => {
-    content.innerHTML = "<b>Power Network</b><br/>Panel coming next.";
+    content.innerHTML = EstatePowerPanel();
   };
 
   document.getElementById("estate-water").onclick = () => {
-    content.innerHTML = "<b>Water & Sewage</b><br/>Panel coming next.";
+    content.innerHTML = EstateWaterPanel();
   };
 
   document.getElementById("estate-fiber").onclick = () => {
-    content.innerHTML = "<b>Fiber Network</b><br/>Panel coming next.";
+    content.innerHTML = EstateFiberPanel();
   };
 
   document.getElementById("estate-security").onclick = () => {
-    content.innerHTML = "<b>Security</b><br/>Panel coming next.";
+    content.innerHTML = EstateSecurityPanel();
   };
 
-  // ---- Selection handler (buildings / floors / units)
+  // -------------------------
+  // SELECTION HANDLER
+  // -------------------------
   window.addEventListener("ochiga-select", (e) => {
     const d = e.detail;
+    if (!d) return;
+
+    // UNIT LEVEL
+    if (d.entity === "UNIT") {
+      content.innerHTML = `
+        <b>🏠 Unit</b><br/>
+        <b>Building:</b> ${d.buildingId}<br/>
+        <b>Floor:</b> ${d.floor}<br/>
+        <b>Unit:</b> ${d.unit}<br/>
+        <b>Type:</b> ${d.unitType}<br/>
+        <b>Estate Controlled:</b> Yes
+      `;
+      return;
+    }
+
+    // FLOOR LEVEL
+    if (d.entity === "FLOOR") {
+      content.innerHTML = `
+        <b>🧱 Floor</b><br/>
+        <b>Building:</b> ${d.buildingId}<br/>
+        <b>Floor:</b> ${d.floor}<br/>
+        <b>Units:</b> 4 (2 × 3B, 2 × 2B)<br/>
+        <b>Estate Controlled:</b> Yes
+      `;
+      return;
+    }
+
+    // BUILDING LEVEL
+    if (d.entity === "BUILDING") {
+      content.innerHTML = `
+        <b>🏢 Building</b><br/>
+        <b>ID:</b> ${d.buildingId}<br/>
+        <b>Type:</b> ${d.buildingType || d.type}<br/>
+        <b>Floors:</b> ${d.floors || "—"}<br/>
+        <b>Estate Controlled:</b> Yes
+      `;
+      return;
+    }
+
+    // FALLBACK
     content.innerHTML = `
-      <b>Entity:</b> ${d.entity}<br/>
-      ${d.buildingId ? `<b>Building:</b> ${d.buildingId}<br/>` : ""}
-      ${d.floor ? `<b>Floor:</b> ${d.floor}<br/>` : ""}
-      <b>Estate Controlled:</b> Yes
+      <b>Selection</b><br/>
+      <pre>${JSON.stringify(d, null, 2)}</pre>
     `;
   });
 }
