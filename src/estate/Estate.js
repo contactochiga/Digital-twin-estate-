@@ -4,7 +4,7 @@ import * as THREE from "three";
 import { createPTBuilding } from "../buildings/PTBuilding";
 import { createDTBuilding } from "../buildings/DTBuilding";
 
-import { createRoad } from "./Road";
+import { createRoad, ROADS } from "./Road";
 import { createMEP } from "./MEP";
 import { PLOTS } from "./Plots";
 
@@ -13,14 +13,14 @@ export function createEstate() {
   estate.name = "OCH-ESTATE-V1";
 
   // -------------------------
-  // ROADS
+  // ROADS (CORRECT)
   // -------------------------
-  estate.add(createRoad("ROAD-1", 0));
-  estate.add(createRoad("ROAD-2", -120));
-  estate.add(createRoad("ROAD-3", -240));
+  ROADS.forEach((road) => {
+    estate.add(createRoad(road));
+  });
 
   // -------------------------
-  // PT BUILDINGS (Apartments)
+  // PT BUILDINGS
   // -------------------------
   const pt1 = createPTBuilding("PT1");
   pt1.position.set(-40, 0, -40);
@@ -31,7 +31,7 @@ export function createEstate() {
   estate.add(pt2);
 
   // -------------------------
-  // DT BUILDINGS (from plots)
+  // DT BUILDINGS (FROM PLOTS)
   // -------------------------
   PLOTS.forEach((plot) => {
     if (plot.type === "DT") {
@@ -50,7 +50,7 @@ export function createEstate() {
   });
 
   // -------------------------
-  // MEP (Estate controlled)
+  // ESTATE MEP
   // -------------------------
   estate.add(createMEP());
 
